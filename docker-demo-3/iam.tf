@@ -182,19 +182,4 @@ locals {
   ecs_consul_server_role_arn  = var.create_service_roles ? aws_iam_role.ecs_consul_server[0].arn  : data.aws_iam_role.ecs_consul_server_existing[0].arn
 }
 
-########################################
-# (D) (선택) 다른 모듈/파일에서 쓰기 쉬우라고 output
-########################################
-output "ec2_role_name" {
-  value = local.ec2_role_name
-}
-output "ec2_instance_profile_name" {
-  value = local.ec2_instance_profile_name
-}
-output "ecs_service_role_name" {
-  value = local.ecs_service_role_name
-}
-output "ecs_consul_server_role_name" {
-  value = local.ecs_consul_server_role_name
-}
 

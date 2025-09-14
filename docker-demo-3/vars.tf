@@ -42,3 +42,23 @@ variable "JENKINS_VERSION" {
   default = "2.319.2"
 }
 
+variable "create_iam" {
+  type    = bool
+  default = false
+}
+
+
+variable "create_backend_bucket" {
+  type    = bool
+  default = false
+}
+
+variable "backend_bucket_name" {
+  default = "terraform-state-8lmwdo9p"
+}
+
+# 이미 만들어져 있는 IAM Role 이름(또는 ARN) 주입용
+variable "ecs_ec2_role_name"        { type = string, default = "ecs-ec2-role" }
+variable "ecs_service_role_name"    { type = string, default = "ecs-service-role" }
+variable "ecs_consul_server_role_name" { type = string, default = "ecs-consul-server-role" }
+

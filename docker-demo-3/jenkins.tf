@@ -1,4 +1,4 @@
-resource "aws_instance" "jenkins-instance" {
+resource "aws_instance" "jenkins-instance-2" {
   ami           = var.AMIS[var.AWS_REGION]
   instance_type = "t2.small"
 
@@ -27,6 +27,6 @@ resource "aws_ebs_volume" "jenkins-data" {
 resource "aws_volume_attachment" "jenkins-data-attachment" {
   device_name = var.INSTANCE_DEVICE_NAME
   volume_id   = aws_ebs_volume.jenkins-data.id
-  instance_id = aws_instance.jenkins-instance.id
+  instance_id = aws_instance.jenkins-instance-2.id
 }
 

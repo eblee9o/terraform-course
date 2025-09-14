@@ -18,7 +18,7 @@ resource "aws_ecs_service" "myapp-service" {
   depends_on      = [aws_iam_policy_attachment.ecs-service-attach1]
 
   load_balancer {
-    elb_name       = aws_elb.myapp-elb.name
+    elb_name       = aws_elb.myapp-elb2.name
     container_name = "myapp"
     container_port = 3000
   }
@@ -28,8 +28,8 @@ resource "aws_ecs_service" "myapp-service" {
 }
 
 # load balancer
-resource "aws_elb" "myapp-elb" {
-  name = "myapp-elb"
+resource "aws_elb" "myapp-elb2" {
+  name = "myapp-elb2"
 
   listener {
     instance_port     = 3000
@@ -55,7 +55,7 @@ resource "aws_elb" "myapp-elb" {
   security_groups = [aws_security_group.myapp-elb-securitygroup.id]
 
   tags = {
-    Name = "myapp-elb"
+    Name = "myapp-elb2"
   }
 }
 

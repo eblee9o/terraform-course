@@ -1,31 +1,65 @@
-# cluster
 resource "aws_ecs_cluster" "example-cluster" {
   name = "example-cluster"
 }
 
-resource "aws_launch_configuration" "ecs-example-launchconfig" {
-  name_prefix          = "ecs-launchconfig"
-  image_id             = var.ECS_AMIS[var.AWS_REGION]
-  instance_type        = var.ECS_INSTANCE_TYPE
-  key_name             = aws_key_pair.mykeypair.key_name
-  iam_instance_profile = aws_iam_instance_profile.ecs-ec2-role.id
-  security_groups      = [aws_security_group.ecs-securitygroup.id]
-  user_data            = "#!/bin/bash\necho 'ECS_CLUSTER=example-cluster' > /etc/ecs/ecs.config\nstart ecs"
+resource "aws_launch_template" "ecs_lt" {
+  name_prefix = "ecs-lt-"
+
+  # 기존 AMI 맵을 그대로 활용 (원래 쓰던 값 유지)
+  image_id      = data.aws_ami.ubuntu_2204.id
+  instance_type = var.ECS_INSTANCE_TYPE
+  key_name      = aws_key_pair.mykeypair.key_name
+
+  # Launch Template에서는 block으로 지정
+  iam_instance_profile {
+    name = local.ec2_instance_profile_name
+  }
+
+  # SG는 vpc_security_group_ids로 설정
+  vpc_security_group_ids = [aws_security_group.ecs-securitygroup.id]
+
+  # LT의 user_data는 base64 인코딩 필요
+  user_data = base64encode(<<-EOF
+    #!/bin/bash
+    echo 'ECS_CLUSTER=example-cluster' > /etc/ecs/ecs.config
+    systemctl enable --now ecs
+  EOF
+  )
+
+  # (선택) EBS, IMDS, 태그 등 추가 설정 가능
+  # block_device_mappings { ... }
+  # metadata_options { http_tokens = "required" }
   lifecycle {
     create_before_destroy = true
   }
 }
 
+# ✅ ASG에서 Launch Configuration → Launch Template로 변경
 resource "aws_autoscaling_group" "ecs-example-autoscaling" {
-  name                 = "ecs-example-autoscaling"
-  vpc_zone_identifier  = [aws_subnet.main-public-1.id, aws_subnet.main-public-2.id]
-  launch_configuration = aws_launch_configuration.ecs-example-launchconfig.name
-  min_size             = 1
-  max_size             = 1
+  name               = "ecs-example-autoscaling"
+  vpc_zone_identifier = [
+    aws_subnet.main-public-1.id,
+    aws_subnet.main-public-2.id
+  ]
+
+  min_size        = 1
+  max_size        = 1
+  desired_capacity = 1
+
+  # 이 블록으로 대체
+  launch_template {
+    id      = aws_launch_template.ecs_lt.id
+    version = "$Latest"  # 또는 "$Default"
+  }
+
   tag {
     key                 = "Name"
     value               = "ecs-ec2-container"
     propagate_at_launch = true
   }
+
+  # (선택) 새로운 인스턴스 준비시간
+  # health_check_type         = "EC2"
+  # health_check_grace_period = 300
 }
 

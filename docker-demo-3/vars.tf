@@ -47,6 +47,11 @@ variable "create_iam" {
   default = false
 }
 
+variable "create_service_roles" {
+  type        = bool
+  default     = false
+}
+
 
 variable "create_backend_bucket" {
   type    = bool

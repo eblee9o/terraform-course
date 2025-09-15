@@ -47,8 +47,8 @@ resource "aws_launch_template" "ecs_lt" {
 }
 
 # ✅ ASG에서 Launch Configuration → Launch Template로 변경
-resource "aws_autoscaling_group" "ecs-example-autoscaling" {
-  name               = "ecs-example-autoscaling"
+resource "aws_autoscaling_group" "ecs-jenkins-autoscaling" {
+  name               = "ecs-jenkins-autoscaling"
   vpc_zone_identifier = [
     aws_subnet.main-public-1.id,
     aws_subnet.main-public-2.id

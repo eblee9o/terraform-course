@@ -78,13 +78,4 @@ variable "ecs_consul_server_role_name" {
 }
 
 
-variable "create_backend_bucket" {
-  type        = bool
-  default     = false   # 기존 버킷을 쓸 거라면 false
-}
-
-variable "backend_bucket_name" {
-  type        = string
-  default     = "terraform-test-a12"  # 실제 존재하는 버킷 이름
-}
 

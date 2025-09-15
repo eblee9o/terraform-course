@@ -14,7 +14,7 @@ resource "aws_ecs_service" "myapp-service" {
   cluster         = aws_ecs_cluster.example-cluster.id
   task_definition = aws_ecs_task_definition.myapp-task-definition.arn
   desired_count   = 1
-  iam_role        = local.ecs_service_role_arn
+  iam_role        = local.ecs_service_role_name
 
   load_balancer {
     elb_name       = aws_elb.myapp-elb2.name

@@ -2,7 +2,7 @@ resource "aws_ecs_cluster" "example-cluster" {
   name = "example-cluster"
 }
 
-# Ubuntu 22.04 최신 AMI
+# Ubuntu 22.04 (예시: Canonical 공식 AMI) — 필요 시 필터 조정
 data "aws_ami" "ubuntu_2204" {
   most_recent = true
   owners      = ["099720109477"] # Canonical
@@ -10,11 +10,6 @@ data "aws_ami" "ubuntu_2204" {
   filter {
     name   = "name"
     values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
   }
 }
 

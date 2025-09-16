@@ -8,6 +8,12 @@ locals {
   ecs_consul_server_role_name  = var.ecs_consul_server_role_name
 }
 
+# iam.tf 등에 추가
+data "aws_iam_instance_profile" "jenkins-role" {
+  name = "jenkins-role"  # 실제 존재하는 프로파일 이름
+}
+
+
 ########################################
 # outputs: 다른 파일/워크플로에서 보기 쉽게 노출
 ########################################

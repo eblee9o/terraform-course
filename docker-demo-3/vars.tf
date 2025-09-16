@@ -35,7 +35,7 @@ variable "AMIS" {
 }
 
 variable "INSTANCE_DEVICE_NAME" {
-  default = "/dev/xvdh"
+  default = "/dev/sdg"
 }
 
 variable "JENKINS_VERSION" {
@@ -44,7 +44,7 @@ variable "JENKINS_VERSION" {
 
 variable "create_iam" {
   type    = bool
-  default = false
+  default = true
 }
 
 variable "create_service_roles" {
@@ -78,4 +78,9 @@ variable "ecs_consul_server_role_name" {
 }
 
 
+variable "TF_VERSION" {
+  description = "Terraform version to install on Jenkins node"
+  type        = string
+  default     = "1.9.5"
+}
 

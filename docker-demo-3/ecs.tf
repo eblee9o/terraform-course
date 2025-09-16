@@ -24,7 +24,8 @@ resource "aws_launch_template" "ecs_lt" {
 
   # Launch Template에서는 block으로 지정
   iam_instance_profile {
-    name = local.ec2_instance_profile_name
+    # name = local.ec2_instance_profile_name
+    name = data.aws_iam_instance_profile.jenkins-role.name
   }
 
   # SG는 vpc_security_group_ids로 설정
@@ -38,9 +39,6 @@ resource "aws_launch_template" "ecs_lt" {
   EOF
   )
 
-  # (선택) EBS, IMDS, 태그 등 추가 설정 가능
-  # block_device_mappings { ... }
-  # metadata_options { http_tokens = "required" }
   lifecycle {
     create_before_destroy = true
   }
@@ -70,8 +68,5 @@ resource "aws_autoscaling_group" "ecs-jenkins-autoscaling" {
     propagate_at_launch = true
   }
 
-  # (선택) 새로운 인스턴스 준비시간
-  # health_check_type         = "EC2"
-  # health_check_grace_period = 300
 }
 

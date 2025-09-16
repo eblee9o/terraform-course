@@ -6,8 +6,8 @@ output "jenkins-connect-ip" {
   value = aws_instance.jenkins-instance-2.public_ip
 }
 
-output "myapp-repository-URL" {
-  value = aws_ecr_repository.myapp.repository_url
-}
 
+output "myapp-repository-URL" {
+  value = local.myapp_repository_url
+}
 

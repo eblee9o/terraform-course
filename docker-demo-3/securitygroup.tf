@@ -77,11 +77,3 @@ resource "aws_security_group" "jenkins-securitygroup" {
   }
 }
 
-resource "aws_security_group_rule" "ecs_allow_3000_from_elb" {
-  type                     = "ingress"
-  from_port                = 3000
-  to_port                  = 3000
-  protocol                 = "tcp"
-  security_group_id        = aws_security_group.ecs-securitygroup.id
-  source_security_group_id = aws_security_group.myapp-elb-securitygroup.id
-}

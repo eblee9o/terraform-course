@@ -3,12 +3,10 @@
     "name": "myapp",
     "image": "${REPOSITORY_URL}:${APP_VERSION}",
     "essential": true,
+    "cpu": 256,
+    "memory": 256,
     "portMappings": [
-      {
-        "containerPort": 3000,
-        "hostPort": 3000,
-        "protocol": "tcp"
-      }
+      { "containerPort": 3000, "hostPort": 3000, "protocol": "tcp" }
     ],
     "healthCheck": {
       "command": ["CMD-SHELL", "curl -fsS http://localhost:3000/health || exit 1"],

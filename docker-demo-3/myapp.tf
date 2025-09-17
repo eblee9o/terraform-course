@@ -58,7 +58,7 @@ resource "aws_elb" "myapp-elb2" {
     healthy_threshold   = 3
     unhealthy_threshold = 3
     timeout             = 30
-    target              = "HTTP:3000/"
+    target              = "HTTP:3000/health"
     interval            = 60
   }
 

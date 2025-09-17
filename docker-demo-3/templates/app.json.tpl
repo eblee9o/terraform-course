@@ -12,7 +12,14 @@
             "containerPort": 3000,
             "hostPort": 3000
         }
-    ]
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "/ecs/myapp",
+        "awslogs-region": "eu-west-1",
+        "awslogs-stream-prefix": "ecs"
+      }
   }
 ]
 

@@ -84,3 +84,13 @@ variable "TF_VERSION" {
   default     = "1.9.5"
 }
 
+variable "key_name" {
+  type    = string
+  default = "mykeypair"        # 실제 키페어 이름
+}
+
+variable "instance_profile_name" {
+  type    = string
+  default = "jenkins-role"     # 실제 인스턴스 프로파일 이름
+}
+

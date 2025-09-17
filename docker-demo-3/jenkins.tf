@@ -10,7 +10,7 @@ resource "aws_instance" "jenkins-instance-2" {
   vpc_security_group_ids = [aws_security_group.jenkins-securitygroup.id]
 
   # the public SSH key
-  key_name = aws_key_pair.mykeypair.key_name
+  key_name = key_name = var.key_name
 
   # user data
    user_data = data.cloudinit_config.cloudinit-jenkins.rendered

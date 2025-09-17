@@ -1,34 +1,65 @@
+########################################
+# Toggle: IAM 생성 여부 (권한 없으면 false)
+########################################
+variable "create_ecs_service_role" {
+  type    = bool
+  default = true
+}
+
+# locals.ecs_service_role_name 은 네 iam.tf에서 이미
+#   ecs_service_role_name = var.ecs_service_role_name
+# 으로 정의되어 있다고 했으므로 그대로 사용
+# (예: var.ecs_service_role_name = "ecs-service-role")
+
+########################################
+# (A) 생성 모드
+########################################
+resource "aws_iam_role" "ecs_service_role" {
+  count = var.create_ecs_service_role ? 1 : 0
+
+  name = local.ecs_service_role_name
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = { Service = "ecs.amazonaws.com" },
+      Action   = "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_service_role_attach" {
+  count      = var.create_ecs_service_role ? 1 : 0
+  role       = aws_iam_role.ecs_service_role[0].name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole"
+}
+
+########################################
+# (B) 참조 모드 (이미 있는 역할만 사용)
+########################################
+data "aws_iam_role" "ecs_service_role" {
+  count = var.create_ecs_service_role ? 0 : 1
+  name  = local.ecs_service_role_name
+}
+
+########################################
+# 공통 출력용 값(생성/참조 어느 쪽이든 단일 경로)
+########################################
 locals {
-  # EC2 컨테이너 인스턴스(Agent)에서 쓸 인스턴스 프로파일/롤 "이름"
-  ec2_role_name             = var.ecs_ec2_role_name
-  ec2_instance_profile_name = var.ecs_ec2_role_name
+  ecs_service_role_name_effective = var.create_ecs_service_role
+    ? aws_iam_role.ecs_service_role[0].name
+    : data.aws_iam_role.ecs_service_role[0].name
 
-  # ECS 서비스 롤 / Consul 서버 롤 "이름"
-  ecs_service_role_name        = var.ecs_service_role_name
-  ecs_consul_server_role_name  = var.ecs_consul_server_role_name
+  ecs_service_role_arn_effective = var.create_ecs_service_role
+    ? aws_iam_role.ecs_service_role[0].arn
+    : data.aws_iam_role.ecs_service_role[0].arn
 }
 
-# iam.tf 등에 추가
-data "aws_iam_instance_profile" "jenkins-role" {
-  name = "jenkins-role"  # 실제 존재하는 프로파일 이름
+output "ecs_service_role_name_effective" {
+  value = local.ecs_service_role_name_effective
 }
 
-
-########################################
-# outputs: 다른 파일/워크플로에서 보기 쉽게 노출
-########################################
-output "ec2_role_name" {
-  value = local.ec2_role_name
+output "ecs_service_role_arn_effective" {
+  value = local.ecs_service_role_arn_effective
 }
 
-output "ec2_instance_profile_name" {
-  value = local.ec2_instance_profile_name
-}
-
-output "ecs_service_role_name" {
-  value = local.ecs_service_role_name
-}
-
-output "ecs_consul_server_role_name" {
-  value = local.ecs_consul_server_role_name
-}

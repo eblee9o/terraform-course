@@ -1,9 +1,9 @@
-resource "aws_key_pair" "mykeypair" {
-  key_name   = "mykeypair"
-#   public_key = file(var.PATH_TO_PUBLIC_KEY)
-  public_key = file("${path.module}/mykey.pub")
-  lifecycle {
-    ignore_changes = [public_key]
-  }
-}
+# resource "aws_key_pair" "mykeypair" {
+#   key_name   = "mykeypair"
+# #   public_key = file(var.PATH_TO_PUBLIC_KEY)
+#   public_key = file("${path.module}/mykey.pub")
+#   lifecycle {
+#     ignore_changes = [public_key]
+#   }
+# }
 

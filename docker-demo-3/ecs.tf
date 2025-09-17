@@ -20,7 +20,7 @@ resource "aws_launch_template" "ecs_lt" {
   # 기존 AMI 맵을 그대로 활용 (원래 쓰던 값 유지)
   image_id      = data.aws_ami.ubuntu_2204.id
   instance_type = var.ECS_INSTANCE_TYPE
-  key_name      = key_name = var.key_name
+  key_name      = var.key_name
 
   # Launch Template에서는 block으로 지정
   iam_instance_profile {

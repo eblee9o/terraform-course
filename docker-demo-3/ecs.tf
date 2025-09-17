@@ -18,14 +18,13 @@ resource "aws_launch_template" "ecs_lt" {
   name_prefix = "ecs-lt-"
 
   # 기존 AMI 맵을 그대로 활용 (원래 쓰던 값 유지)
-  image_id      = data.aws_ami.ubuntu_2204.id
+  image_id      = data.aws_ssm_parameter.ecs_al2_ami.value
   instance_type = var.ECS_INSTANCE_TYPE
   key_name      = var.key_name
 
   # Launch Template에서는 block으로 지정
   iam_instance_profile {
-    # name = local.ec2_instance_profile_name
-    name = data.aws_iam_instance_profile.jenkins_role.name
+    name = aws_iam_instance_profile.ecs_instance_profile.name
   }
 
   # SG는 vpc_security_group_ids로 설정
@@ -68,5 +67,11 @@ resource "aws_autoscaling_group" "ecs-jenkins-autoscaling" {
     propagate_at_launch = true
   }
 
+}
+
+
+# 최신 Amazon Linux 2 ECS 최적화 AMI
+data "aws_ssm_parameter" "ecs_al2_ami" {
+  name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
 }
 

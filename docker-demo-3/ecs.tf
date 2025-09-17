@@ -24,7 +24,7 @@ resource "aws_launch_template" "ecs_lt" {
 
   # Launch Template에서는 block으로 지정
   iam_instance_profile {
-    name = local.ecs_ec2_instance_profile_name_effective
+    name = aws_iam_instance_profile.ecs_instance_profile.name
   }
 
   # SG는 vpc_security_group_ids로 설정
@@ -40,35 +40,24 @@ resource "aws_launch_template" "ecs_lt" {
 
   lifecycle { create_before_destroy = true }
 
-  # LT의 user_data는 base64 인코딩 필요
-  user_data = base64encode(<<-EOF
-    #!/bin/bash
-    echo 'ECS_CLUSTER=example-cluster' > /etc/ecs/ecs.config
-    systemctl enable --now ecs
-  EOF
-  )
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 # ✅ ASG에서 Launch Configuration → Launch Template로 변경
 resource "aws_autoscaling_group" "ecs-jenkins-autoscaling" {
-  name               = "ecs-jenkins-autoscaling"
+  name = "ecs-jenkins-autoscaling"
   vpc_zone_identifier = [
     aws_subnet.main-public-1.id,
     aws_subnet.main-public-2.id
   ]
 
-  min_size        = 1
-  max_size        = 1
+  min_size         = 1
+  max_size         = 1
   desired_capacity = 1
 
   # 이 블록으로 대체
   launch_template {
     id      = aws_launch_template.ecs_lt.id
-    version = "$Latest"  # 또는 "$Default"
+    version = "$Latest" # 또는 "$Default"
   }
 
   tag {

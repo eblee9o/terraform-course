@@ -1,7 +1,7 @@
 #ecr
 variable "ecr_repo_name" {
   type    = string
-  default = "myapp"     # 필요하면 Jenkins에서 -var로 덮어쓰기
+  default = "myapp" # 필요하면 Jenkins에서 -var로 덮어쓰기
 }
 
 # 기존 레포지토리 조회(생성 안 함)
@@ -18,7 +18,7 @@ locals {
 # app
 
 resource "aws_ecs_task_definition" "myapp-task-definition" {
-  family                = "myapp"
+  family = "myapp"
   container_definitions = templatefile("templates/app.json.tpl", {
     REPOSITORY_URL = replace(local.myapp_repository_url, "https://", "")
     APP_VERSION    = var.MYAPP_VERSION

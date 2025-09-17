@@ -1,6 +1,6 @@
 resource "aws_instance" "jenkins-instance-2" {
   # ami           = var.AMIS[var.AWS_REGION]
-  ami            = data.aws_ami.ubuntu_2204.id
+  ami           = data.aws_ami.ubuntu_2204.id
   instance_type = "t2.small"
 
   # the VPC subnet
@@ -13,16 +13,16 @@ resource "aws_instance" "jenkins-instance-2" {
   key_name = var.key_name
 
   # user data
-   user_data = data.cloudinit_config.cloudinit-jenkins.rendered
+  user_data = data.cloudinit_config.cloudinit-jenkins.rendered
 
   # user_data 변경 시 인스턴스 자동 교체
   user_data_replace_on_change = true
 
   ebs_block_device {
-    device_name           = "/dev/sdp"      # BDM에 없는 슬롯 하나 선택 (sdp 권장)
+    device_name           = "/dev/sdp" # BDM에 없는 슬롯 하나 선택 (sdp 권장)
     volume_size           = 50
     volume_type           = "gp3"
-    delete_on_termination = true            # 인스턴스 삭제 시 자동 정리
+    delete_on_termination = true # 인스턴스 삭제 시 자동 정리
     encrypted             = true
   }
 

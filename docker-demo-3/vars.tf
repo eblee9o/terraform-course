@@ -48,8 +48,8 @@ variable "create_iam" {
 }
 
 variable "create_service_roles" {
-  type        = bool
-  default     = false
+  type    = bool
+  default = false
 }
 
 
@@ -86,11 +86,11 @@ variable "TF_VERSION" {
 
 variable "key_name" {
   type    = string
-  default = "mykeypair"        # 실제 키페어 이름
+  default = "mykeypair" # 실제 키페어 이름
 }
 
 variable "instance_profile_name" {
   type    = string
-  default = "jenkins-role"     # 실제 인스턴스 프로파일 이름
+  default = "jenkins-role" # 실제 인스턴스 프로파일 이름
 }
 

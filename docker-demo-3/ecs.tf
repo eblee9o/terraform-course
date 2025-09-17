@@ -25,7 +25,7 @@ resource "aws_launch_template" "ecs_lt" {
   # Launch Template에서는 block으로 지정
   iam_instance_profile {
     # name = local.ec2_instance_profile_name
-    name = name = data.aws_iam_instance_profile.jenkins_role.name
+    name = data.aws_iam_instance_profile.jenkins_role.name
   }
 
   # SG는 vpc_security_group_ids로 설정

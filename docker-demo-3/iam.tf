@@ -6,10 +6,11 @@ variable "create_ecs_service_role" {
   default = true
 }
 
-# locals.ecs_service_role_name 은 네 iam.tf에서 이미
-#   ecs_service_role_name = var.ecs_service_role_name
-# 으로 정의되어 있다고 했으므로 그대로 사용
-# (예: var.ecs_service_role_name = "ecs-service-role")
+# 이미 사용 중인 변수/locals와 호환
+variable "ecs_service_role_name" {
+  type    = string
+  default = "ecs-service-role"
+}
 
 ########################################
 # (A) 생성 모드
@@ -17,7 +18,7 @@ variable "create_ecs_service_role" {
 resource "aws_iam_role" "ecs_service_role" {
   count = var.create_ecs_service_role ? 1 : 0
 
-  name = local.ecs_service_role_name
+  name = var.ecs_service_role_name
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [{
@@ -39,20 +40,18 @@ resource "aws_iam_role_policy_attachment" "ecs_service_role_attach" {
 ########################################
 data "aws_iam_role" "ecs_service_role" {
   count = var.create_ecs_service_role ? 0 : 1
-  name  = local.ecs_service_role_name
+  name  = var.ecs_service_role_name
 }
 
 ########################################
-# 공통 출력용 값(생성/참조 어느 쪽이든 단일 경로)
+# 공통 값 (삼항은 한 줄로!)
 ########################################
 locals {
-  ecs_service_role_name_effective = var.create_ecs_service_role
-    ? aws_iam_role.ecs_service_role[0].name
-    : data.aws_iam_role.ecs_service_role[0].name
+  ecs_service_role_name_effective = var.create_ecs_service_role ? aws_iam_role.ecs_service_role[0].name : data.aws_iam_role.ecs_service_role[0].name
+  ecs_service_role_arn_effective  = var.create_ecs_service_role ? aws_iam_role.ecs_service_role[0].arn  : data.aws_iam_role.ecs_service_role[0].arn
 
-  ecs_service_role_arn_effective = var.create_ecs_service_role
-    ? aws_iam_role.ecs_service_role[0].arn
-    : data.aws_iam_role.ecs_service_role[0].arn
+  # 기존 코드 호환: 너의 iam.tf에서 쓰던 local 이름으로도 노출
+  ecs_service_role_name = local.ecs_service_role_name_effective
 }
 
 output "ecs_service_role_name_effective" {

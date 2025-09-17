@@ -24,11 +24,21 @@ resource "aws_launch_template" "ecs_lt" {
 
   # Launch Template에서는 block으로 지정
   iam_instance_profile {
-    name = aws_iam_instance_profile.ecs_instance_profile.name
+    name = local.ecs_ec2_instance_profile_name_effective
   }
 
   # SG는 vpc_security_group_ids로 설정
   vpc_security_group_ids = [aws_security_group.ecs-securitygroup.id]
+
+  # user_data
+  user_data = base64encode(<<-EOF
+    #!/bin/bash
+    echo "ECS_CLUSTER=${aws_ecs_cluster.example-cluster.name}" > /etc/ecs/ecs.config
+    systemctl enable --now ecs
+  EOF
+  )
+
+  lifecycle { create_before_destroy = true }
 
   # LT의 user_data는 base64 인코딩 필요
   user_data = base64encode(<<-EOF

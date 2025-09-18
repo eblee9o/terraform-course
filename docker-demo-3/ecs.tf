@@ -2,15 +2,8 @@ resource "aws_ecs_cluster" "example-cluster" {
   name = "example-cluster"
 }
 
-# Ubuntu 22.04 (예시: Canonical 공식 AMI) — 필요 시 필터 조정
-data "aws_ami" "ubuntu_2204" {
-  most_recent = true
-  owners      = ["099720109477"] # Canonical
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
-  }
+data "aws_ssm_parameter" "ecs_al2_ami" {
+  name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
 }
 
 
@@ -31,33 +24,26 @@ resource "aws_launch_template" "ecs_lt" {
   vpc_security_group_ids = [aws_security_group.ecs-securitygroup.id]
 
   # user_data
-  user_data = base64encode(<<-EOF
-    #!/bin/bash
-    echo "ECS_CLUSTER=${aws_ecs_cluster.example-cluster.name}" > /etc/ecs/ecs.config
-    systemctl enable --now ecs
-  EOF
-  )
+  user_data_base64 = data.cloudinit_config.ecs.rendered
 
-  lifecycle { create_before_destroy = true }
+  lifecycle {
+    create_before_destroy = true
+    ignore_changes        = [user_data, user_data_base64]
+  }
 
 }
 
-# ✅ ASG에서 Launch Configuration → Launch Template로 변경
 resource "aws_autoscaling_group" "ecs-jenkins-autoscaling" {
   name = "ecs-jenkins-autoscaling"
-  vpc_zone_identifier = [
-    aws_subnet.main-public-1.id,
-    aws_subnet.main-public-2.id
-  ]
+  vpc_zone_identifier = [aws_subnet.main-public-1.id, aws_subnet.main-public-2.id]
 
   min_size         = 1
   max_size         = 1
   desired_capacity = 1
 
-  # 이 블록으로 대체
   launch_template {
     id      = aws_launch_template.ecs_lt.id
-    version = "$Latest" # 또는 "$Default"
+    version = "$Latest" 
   }
 
   tag {
@@ -69,8 +55,4 @@ resource "aws_autoscaling_group" "ecs-jenkins-autoscaling" {
 }
 
 
-# 최신 Amazon Linux 2 ECS 최적화 AMI
-data "aws_ssm_parameter" "ecs_al2_ami" {
-  name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
-}
 

@@ -30,3 +30,17 @@ data "cloudinit_config" "jenkins_controller" {
   }
 }
 
+data "cloudinit_config" "ecs" {
+  gzip          = false
+  base64_encode = true
+
+  part {
+    content_type = "text/x-shellscript"
+    content      = <<-EOF
+      #!/bin/bash
+      echo "ECS_CLUSTER=example-cluster" > /etc/ecs/ecs.config
+      systemctl enable --now ecs
+    EOF
+  }
+}
+

@@ -19,7 +19,7 @@ resource "aws_iam_role" "ecs_service_role" {
 
 resource "aws_iam_role_policy_attachment" "ecs_service_role_attach" {
   count      = var.create_service_roles ? 1 : 0
-  role       = aws_iam_role.ecs_service_role[0].name
+  role       = aws_iam_role.ecs_service_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole"
 }
 

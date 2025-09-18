@@ -69,7 +69,8 @@ variable "ecs_ec2_role_name" {
 
 variable "ecs_service_role_name" {
   type    = string
-  default = "ecs-service-role"
+  # default = "ecs-service-role"
+  default  = "ecsInstanceRole"
 }
 
 variable "ecs_consul_server_role_name" {

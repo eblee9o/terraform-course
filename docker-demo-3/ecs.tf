@@ -28,7 +28,7 @@ resource "aws_launch_template" "ecs_lt" {
 
   lifecycle {
     create_before_destroy = true
-    ignore_changes        = [user_data, user_data_base64]
+    ignore_changes        = [user_data]
   }
 
 }

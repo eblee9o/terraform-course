@@ -24,7 +24,7 @@ resource "aws_launch_template" "ecs_lt" {
   vpc_security_group_ids = [aws_security_group.ecs-securitygroup.id]
 
   # user_data
-  user_data_base64 = data.cloudinit_config.ecs.rendered
+  user_data = data.cloudinit_config.ecs.rendered
 
   lifecycle {
     create_before_destroy = true

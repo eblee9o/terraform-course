@@ -6,9 +6,7 @@
 
 # 생성 모드
 resource "aws_iam_role" "ecs_service_role" {
-  count = var.create_service_roles ? 1 : 0
-
-  name = var.ecs_service_role_name
+  name = "ecsServiceRole"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [{

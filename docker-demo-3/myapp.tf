@@ -44,9 +44,7 @@ resource "aws_ecs_service" "myapp-service" {
   }
 
   # 생성모드일 때만 정책 부착 완료를 기다림
-  depends_on = var.create_service_roles ? [
-    aws_iam_role_policy_attachment.ecs_service_role_attach[0]
-  ] : []
+  depends_on = var.create_service_roles ? [aws_iam_role_policy_attachment.ecs_service_role_attach[0]] : []
 }
 
 # load balancer

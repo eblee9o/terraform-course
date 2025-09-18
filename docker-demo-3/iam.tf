@@ -31,20 +31,18 @@ data "aws_iam_role" "ecs_service_role" {
   name  = var.ecs_service_role_name
 }
 
-# 공통 출력(둘 중 무엇을 쓰든 한 경로로 소비)
-locals {
-  ecs_service_role_name_effective = var.create_service_roles ? aws_iam_role.ecs_service_role[0].name : data.aws_iam_role.ecs_service_role[0].name
-
-  ecs_service_role_arn_effective = var.create_service_roles ? aws_iam_role.ecs_service_role[0].arn : data.aws_iam_role.ecs_service_role[0].arn
+# ecs 서비스가 ELB에 접근할 수 있도록 trust policy
+data "aws_iam_policy_document" "ecs_service_assume" {
+  statement {
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["ecs.amazonaws.com"]
+    }
+    actions = ["sts:AssumeRole"]
+  }
 }
 
-output "ecs_service_role_name_effective" {
-  value = local.ecs_service_role_name_effective
-}
-
-output "ecs_service_role_arn_effective" {
-  value = local.ecs_service_role_arn_effective
-}
 
 ########################################
 # EC2(컨테이너 인스턴스)용 IAM Role / Instance Profile
@@ -71,4 +69,5 @@ resource "aws_iam_instance_profile" "ecs_instance_profile" {
   name = "ecsInstanceProfile"
   role = aws_iam_role.ecs_instance_role.name
 }
+
 

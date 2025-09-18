@@ -20,8 +20,11 @@ resource "aws_launch_template" "ecs_lt" {
     name = aws_iam_instance_profile.ecs_instance_profile.name
   }
 
-  # SG는 vpc_security_group_ids로 설정
-  vpc_security_group_ids = [aws_security_group.ecs-securitygroup.id]
+  network_interfaces {
+    device_index                = 0
+    security_groups             = [aws_security_group.ecs-securitygroup.id]
+    associate_public_ip_address = true
+  }
 
   # user_data
   user_data = data.cloudinit_config.ecs.rendered
@@ -52,7 +55,6 @@ resource "aws_autoscaling_group" "ecs-jenkins-autoscaling" {
       min_healthy_percentage = 100
       instance_warmup        = 60
     }
-    triggers = ["launch_template"]
   }
 
 

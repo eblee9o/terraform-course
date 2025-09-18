@@ -31,7 +31,10 @@ resource "aws_ecs_service" "myapp-service" {
   cluster         = aws_ecs_cluster.example-cluster.id
   task_definition = aws_ecs_task_definition.myapp-task-definition.arn
   desired_count   = 1
-  iam_role        = aws_iam_role.ecs_service_role[0].name
+  iam_role = var.create_service_roles
+     ? aws_iam_role.ecs_service_role[0].name
+     : data.aws_iam_role.ecs_service_role[0].name
+
 
   load_balancer {
     elb_name       = aws_elb.myapp-elb2.name
@@ -41,6 +44,11 @@ resource "aws_ecs_service" "myapp-service" {
   lifecycle {
     ignore_changes = [task_definition]
   }
+
+  # 생성모드일 때만 정책 부착 완료를 기다림
+  depends_on = var.create_service_roles ? [
+    aws_iam_role_policy_attachment.ecs_service_role_attach[0]
+  ] : []
 }
 
 # load balancer

@@ -46,6 +46,16 @@ resource "aws_autoscaling_group" "ecs-jenkins-autoscaling" {
     version = "$Latest" 
   }
 
+  instance_refresh {
+    strategy = "Rolling"
+    preferences {
+      min_healthy_percentage = 100
+      instance_warmup        = 60
+    }
+    triggers = ["launch_template"]
+  }
+
+
   tag {
     key                 = "Name"
     value               = "ecs-ec2-container"

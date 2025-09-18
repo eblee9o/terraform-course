@@ -31,7 +31,7 @@ resource "aws_ecs_service" "myapp-service" {
   cluster         = aws_ecs_cluster.example-cluster.id
   task_definition = aws_ecs_task_definition.myapp-task-definition.arn
   desired_count   = 1
-  iam_role = var.create_service_roles? aws_iam_role.ecs_service_role[0].name : data.aws_iam_role.ecs_service_role[0].name
+  iam_role = "ecsServiceRole"
 
 
   load_balancer {
